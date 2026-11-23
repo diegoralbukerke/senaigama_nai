@@ -1,0 +1,4 @@
+mediapipe==0.10.21
+opencv-python==4.10.0.84
+websockets==13.1
+pygrabber==0.2; sys_platform == "win32"

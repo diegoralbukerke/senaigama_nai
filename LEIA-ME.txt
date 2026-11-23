@@ -1,0 +1,81 @@
+NAI IA · MUNDO SENAI — como usar (divulgação do curso de Inteligência Artificial)
+=============================
+
+O QUE TEM NESTA PASTA
+  NAI-IA-SENAI-Gama.html     → a NAI (vídeo, curso de IA em destaque, áreas e cursos)
+  nai_maos.py                → programa que lê a câmera, reconhece as mãos e vê quem parou na frente
+  instalar.bat               → instala o necessário (só na primeira vez)
+  iniciar_NAI.bat            → abre tudo para o evento
+  testar_maos.bat            → janela de teste da câmera e das mãos
+
+PRIMEIRA VEZ (com internet)
+  Dê dois cliques em  instalar.bat  e espere terminar (5 a 10 minutos). Ele faz tudo sozinho:
+    1. instala o Python 3.12 se não tiver (não precisa ser administrador)
+       – a 3.12 é necessária; pode conviver com outras versões já instaladas
+    2. instala o Visual C++ da Microsoft se faltar (o Windows pode pedir "Sim")
+    3. instala as bibliotecas de visão (mediapipe, opencv, websockets) numa pasta SEM ACENTO
+       (%LOCALAPPDATA%\NAI-venv) — a biblioteca de mãos não funciona em pastas como "Área de Trabalho".
+       Esse ambiente serve para as duas versões da NAI (CIL e Cursos): instala uma vez só.
+    4. testa tudo e cria o atalho "NAI Mundo SENAI" na Área de Trabalho
+  A pasta da NAI pode ficar em qualquer lugar (inclusive Área de Trabalho/OneDrive).
+
+NO EVENTO
+  1. Feche Teams, Zoom e outros navegadores que usem a câmera.
+  2. Dê dois cliques em  iniciar_NAI.bat  (ou no atalho "NAI Mundo SENAI").
+     → abre uma janela preta (deixe aberta) e a NAI em tela cheia no FIREFOX
+       (se não tiver Firefox, usa o Edge ou o Chrome).
+  3. Na janela preta (clique nela e aperte a tecla):
+        F = FECHAR a NAI (tela cheia + programa)
+        R = reabrir a tela da NAI (se ela fechar ou travar)
+        T = trocar a TELA (monitor) da NAI — aparece a lista e você aperta o número
+        I = identificar as telas (mostra um número grande em cada monitor por 4 s)
+        C = trocar a câmera (se tiver mais de uma)
+        N = trocar o navegador (Firefox → Edge → Chrome); a escolha fica salva
+        J = mostrar/esconder a janela de teste da câmera
+     Fechar a janela preta no X também fecha a NAI.
+
+TELA (MONITOR) — para quem usa 2 telas
+  • A escolha fica salva: nas próximas vezes a NAI já abre na mesma tela.
+  • Dá para trocar de 3 jeitos: tecla T na janela preta; no painel da NAI (tecla S →
+    "Tela (monitor) onde a NAI aparece"); ou editando iniciar_NAI.bat:  nai_maos.py --monitor 2
+  • A Tela 1 é sempre a principal do Windows; as outras seguem da esquerda para a direita.
+    Na dúvida, use I (identificar).
+  • Plano B do próprio Windows: com a NAI na frente, Win + Shift + seta ← ou → leva a janela
+    para a outra tela.
+     Dica: Alt+Tab troca entre a NAI e a janela preta.
+
+DENTRO DA NAI
+  Como funciona:
+   1. Quando alguém para na frente da TV, a NAI fala o vídeo de divulgação
+      (também repete sozinha a cada 60 s, se ninguém estiver usando).
+   2. Quando ela diz "escolha uma área", aparecem ao lado dela: o CURSO DE IA em destaque
+      (já com o QR Code de inscrição) e embaixo as 10 áreas.
+   3. A pessoa aponta o dedo para a câmera → aparece uma MÃOZINHA na tela.
+      Segura ~1 segundo sobre uma área → abre a lista de cursos (nome e carga horária)
+      com o QR Code de inscrição (cursos.senaidf.org.br).
+   4. No cartão de IA abre a tela completa do curso: conteúdos, 40h, início, online e
+      um QR Code grande para a inscrição.
+   5. "Ver outras áreas" volta. Sem ninguém apontando por 30 s, a lista fecha sozinha.
+
+  Teclas (plano B se a câmera falhar):
+   S        abre/fecha o painel de configurações
+   P        a NAI fala o vídeo de divulgação
+   1 = curso de IA · 2 a 9, 0 e - = as 10 áreas · Esc fecha
+
+  No painel (S) → "Curso em destaque": link da inscrição (o QR Code muda junto),
+  carga horária, data de início, modalidade e conteúdos do curso de IA.
+  Também no painel: trocar o vídeo e o texto do balão, quando ela fala, tempos,
+  tamanho da área do gesto e a LISTA DE CURSOS (dá para editar para o próximo edital:
+  linha com # é a área com ícone; depois "Nome do curso | 200h").
+
+SE ALGO DER ERRADO
+  • Câmera preta: o programa testa sozinho outros jeitos de abrir a câmera (aparece
+    "imagem preta, tentando outro jeito..."). Se nenhum der certo:
+      – feche Teams, Zoom, o app Câmera e navegadores que usam a câmera;
+      – Configurações → Privacidade e segurança → Câmera → ligue "Acesso à câmera" e
+        "Permitir que aplicativos da área de trabalho acessem a câmera";
+      – confira tecla/tampinha de desligar a câmera do notebook; aperte C para outra câmera.
+  • Câmera errada: aperte C na janela preta (troca e salva), ou abra pelo terminal:
+        iniciar_NAI.bat --camera 1
+  • Conferir o reconhecimento: testar_maos.bat mostra a mão, a ponta do dedo e os rostos.
+  • Sem o programa Python, a NAI ainda funciona sozinha no navegador (reconhecimento mais fraco).

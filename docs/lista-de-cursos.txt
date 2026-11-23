@@ -1,0 +1,59 @@
+# ⚡ Elétrica e Energia
+Eletricista de Instalações Prediais | 200h
+Eletricista de Sistemas Fotovoltaicos | 200h
+Eletricista Industrial | 200h
+Dimensionamento de Instalações Elétricas Prediais | 40h
+SPDA – Proteção Contra Descargas Atmosféricas | 32h
+Instalação de Carregador Elétrico Veicular (Wallbox) | 8h
+Instalação de Infraestruturas Externas para Sistemas Elétricos Prediais | 8h
+# 💻 Tecnologia e IA
+Operador de Computador com IA | 230h
+Desenvolvedor Java | 200h
+Desenvolvedor Python | 200h
+# 🎨 Design Gráfico
+Design Gráfico Criativo | 200h
+Design Gráfico Editorial | 200h
+Ilustração Digital | 80h
+Fundamentos de IA para Designers | 60h
+Criação e Edição com Adobe Photoshop | 60h
+Ilustração Digital com Adobe Illustrator | 60h
+Diagramação com Adobe InDesign | 60h
+Fechamento de Arquivo | 60h
+# 🍰 Alimentos
+Confeiteiro | 220h
+Padeiro | 220h
+Fabricação de Sobremesas | 20h
+Fabricação de Panetones e Variações | 16h
+Fabricação de Rabanadas Tradicionais e Recheadas | 12h
+# 🧵 Moda e Vestuário
+Costureiro Sob Medida – Modelagem, Corte e Costura | 260h
+Costureiro Industrial do Vestuário | 200h
+Modelista | 200h
+# ❄️ Refrigeração
+Mecânico de Refrigeração Residencial | 220h
+Mecânico de Climatização Residencial | 220h
+Cálculo de Carga Térmica para Climatização de Ambientes | 15h
+# ⚙️ Metalmecânica
+Fresador Mecânico | 200h
+Programação e Operação de Centro de Usinagem CNC | 60h
+Criação de Desenho Mecânico 3D | 60h
+Gestão da Produção na Serralheria | 36h
+Eletropneumática | 32h
+# 🏍️ Automotiva
+Mecânico de Manutenção em Motocicletas | 280h
+Eletromecânico de Motores de Combustão Interna | 200h
+# 📦 Logística
+Operador de Processos de Distribuição Logística | 220h
+Almoxarife | 200h
+Assistente de Operações Logísticas | 166h
+Logística de Armazenamento | 90h
+# 📊 Gestão e Negócios
+Assistente Administrativo | 250h
+Assistente de Contabilidade | 160h a 200h
+Assistente de Controle de Qualidade | 180h
+Assistente de Recursos Humanos | 160h
+Controlador e Programador de Produção | 160h
+Produtividade e Liderança | 40h
+Elaboração de Matriz de Risco | 15h
+Metodologia 5S | 12h
+Comunicação, Colaboração e Trabalho em Equipe | 8h
