@@ -77,6 +77,9 @@ flowchart LR
 | `Estabilizador` | Só troca o número quando ele se repete na maioria dos últimos quadros (evita "piscar") |
 | `atender` / `transmitir` | Servidor WebSocket: manda o estado das mãos e dos rostos 25 vezes por segundo |
 | `listar_monitores`, `encaixar_janela` | Usam a API do Windows (`ctypes` + `user32`) para descobrir as telas e colocar a NAI na TV certa |
+| `monitor_escolhido` | Escolhe a tela da NAI: a escolhida com `T` (guardada pelo nome do monitor); se ela sumir, ou se nada foi escolhido, a TV (maior tela que não é a principal) |
+| `energia_preparar` / `energia_restaurar` | Com `powercfg`, faz "fechar a tampa" não fazer nada e impede o PC e a tela de dormir; ao apertar `F`, devolve a ação original da tampa |
+| `vigiar_telas` | A cada 2 s confere as telas; quando uma sai ou entra (tampa fechada), leva a NAI em tela cheia para a tela certa ou a reabre lá |
 | `abrir_navegador` | Abre Firefox, Edge ou Chrome em **modo quiosque** (tela cheia, sem barra) |
 | `menu_teclado` | As teclas F, R, T, I, C, N e J da janela preta |
 

@@ -62,6 +62,11 @@ Abra o **`iniciar_NAI.bat`** ou o atalho. Abrem duas coisas:
 | `2`–`9`, `0`, `-` | Abrem as 10 áreas |
 | `Esc` | Fecha a lista |
 
+**Notebook + TV:** ao abrir, o programa ajusta o Windows para não dormir nem apagar a tela ao
+fechar a tampa. Pode fechar a tampa: a NAI vai sozinha, em tela cheia, para a TV. Sem tela escolhida,
+a NAI já abre na TV (a maior tela que não é a principal). Ao apertar `F`, a ação da tampa volta ao
+que era antes. Deixe o notebook na tomada.
+
 As escolhas de monitor, câmera e navegador ficam salvas em `nai_config.json`, que é criado sozinho
 e não vai para o GitHub porque é diferente em cada PC.
 

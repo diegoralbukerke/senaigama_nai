@@ -68,6 +68,11 @@ DENTRO DA NAI
   tamanho da área do gesto e a LISTA DE CURSOS (dá para editar para o próximo edital:
   linha com # é a área com ícone; depois "Nome do curso | 200h").
 
+TAMPA DO NOTEBOOK (notebook + TV)
+  • Ao abrir a NAI, o programa ajusta o Windows para NÃO dormir ao fechar a tampa e não
+    apagar a tela. Pode fechar a tampa: a NAI vai sozinha para a TV, em tela cheia.
+  • Deixe o notebook na TOMADA. Ao apertar F, a configuração da tampa volta ao normal.
+
 SE ALGO DER ERRADO
   • Câmera preta: o programa testa sozinho outros jeitos de abrir a câmera (aparece
     "imagem preta, tentando outro jeito..."). Se nenhum der certo:

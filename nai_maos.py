@@ -15,6 +15,7 @@ Uso:  python nai_maos.py              (normal)
 Para sair: aperte F nesta janela (fecha a tela da NAI e o programa) — ou feche esta janela.
 """
 import argparse
+import re
 import asyncio
 import base64
 import collections
@@ -87,6 +88,8 @@ if os.name == "nt":
     user32.GetWindowRect.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.RECT)]
     user32.SetWindowPos.argtypes = [wintypes.HWND, wintypes.HWND, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, wintypes.UINT]
     user32.SetForegroundWindow.argtypes = [wintypes.HWND]
+    user32.IsIconic.argtypes = [wintypes.HWND]
+    user32.ShowWindow.argtypes = [wintypes.HWND, ctypes.c_int]
 
     # coordenadas em pixels reais (sem isso, telas com zoom de 125%/150% dão posições erradas)
     try:
@@ -125,9 +128,22 @@ def listar_monitores():
 
 
 def monitor_escolhido():
+    """Tela da NAI: a escolhida (tecla T / painel); se ela sumir (ex.: tampa do notebook fechada)
+    ou se nada foi escolhido, a TV = a maior tela que não é a principal (ou a única que sobrou)."""
     mons = listar_monitores()
-    n = config.get("monitor") or 1
-    return next((m for m in mons if m["n"] == n), mons[0] if mons else None)
+    if not mons:
+        return None
+    dev = config.get("monitor_dev")
+    if dev:
+        m = next((x for x in mons if x["dev"] == dev), None)
+        if m:
+            return m
+    elif config.get("monitor"):
+        m = next((x for x in mons if x["n"] == config["monitor"]), None)
+        if m:
+            return m
+    outras = [x for x in mons if not x["principal"]] or mons
+    return max(outras, key=lambda x: x["w"] * x["h"])
 
 
 def achar_janela_nai():
@@ -161,10 +177,13 @@ def achar_janela_nai():
 
 
 def janela_esta_na_tela(hwnd, m):
+    """A janela cobre a tela m inteira (tela cheia certinha)?"""
+    if user32.IsIconic(hwnd):
+        return False
     r = wintypes.RECT()
     user32.GetWindowRect(hwnd, ctypes.byref(r))
-    cx, cy = (r.left + r.right) // 2, (r.top + r.bottom) // 2
-    return m["x"] <= cx < m["x"] + m["w"] and m["y"] <= cy < m["y"] + m["h"]
+    return (abs(r.left - m["x"]) <= 8 and abs(r.top - m["y"]) <= 8
+            and abs(r.right - (m["x"] + m["w"])) <= 8 and abs(r.bottom - (m["y"] + m["h"])) <= 8)
 
 
 def encaixar_janela(m, espera=0.0):
@@ -178,6 +197,9 @@ def encaixar_janela(m, espera=0.0):
         return False
     if janela_esta_na_tela(h, m):
         return True
+    if user32.IsIconic(h):
+        user32.ShowWindow(h, 9)                                                     # SW_RESTORE
+        time.sleep(0.5)
     user32.SetWindowPos(h, None, m["x"], m["y"], m["w"], m["h"], 0x0004 | 0x0040)   # SWP_NOZORDER | SWP_SHOWWINDOW
     time.sleep(1.0)
     user32.SetForegroundWindow(h)
@@ -191,6 +213,7 @@ def mudar_tela(n):
         print(f"[tela] não existe a tela {n}.")
         return
     config["monitor"] = n
+    config["monitor_dev"] = m["dev"]
     salvar_config()
     print(f"[tela] levando a NAI para a {m['desc']}...")
     if encaixar_janela(m):
@@ -575,8 +598,89 @@ async def atender(ws, path=None):
 
 
 def info_telas():
+    atual = monitor_escolhido()
     return {"type": "info", "monitores": [{"n": m["n"], "desc": m["desc"]} for m in listar_monitores()],
-            "monitor": config.get("monitor") or 1}
+            "monitor": atual["n"] if atual else 1}
+
+
+# ----------------------------------------------------------------------------- tampa do notebook / energia
+def _powercfg(*args):
+    try:
+        r = subprocess.run(["powercfg", *args], capture_output=True, timeout=15,
+                           creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        return r.returncode, r.stdout.decode("cp850", "ignore")
+    except Exception as e:
+        return 1, str(e)
+
+
+def energia_preparar():
+    """Para o evento: a tela e o PC não apagam, e fechar a tampa do notebook não faz nada
+    (a NAI continua na TV). O original fica salvo e volta quando a NAI é fechada (tecla F)."""
+    if os.name != "nt":
+        return
+    try:
+        ctypes.windll.kernel32.SetThreadExecutionState(0x80000000 | 0x00000001 | 0x00000002)   # contínuo + sistema + tela
+    except Exception:
+        pass
+    if "tampa_original" not in config:
+        rc, out = _powercfg("/query", "SCHEME_CURRENT", "SUB_BUTTONS", "LIDACTION")
+        vals = re.findall(r"0x([0-9a-fA-F]{8})", out)
+        if rc != 0 or len(vals) < 2:
+            print("[energia] não consegui ler a configuração da tampa. No Windows: Opções de energia →")
+            print("          'Escolher a função do fechamento da tampa' → 'Nada a fazer' (na bateria e na tomada).")
+            return
+        config["tampa_original"] = [int(vals[-2], 16), int(vals[-1], 16)]          # [tomada, bateria]
+        salvar_config()
+    ok = (_powercfg("/setacvalueindex", "SCHEME_CURRENT", "SUB_BUTTONS", "LIDACTION", "0")[0] == 0
+          and _powercfg("/setdcvalueindex", "SCHEME_CURRENT", "SUB_BUTTONS", "LIDACTION", "0")[0] == 0)
+    _powercfg("/setactive", "SCHEME_CURRENT")
+    if ok:
+        print("[energia] pode fechar a tampa do notebook: ele não dorme e a NAI vai para a TV.")
+        print("          (deixe o notebook na tomada; ao apertar F a configuração volta ao normal)")
+    else:
+        print("[energia] o Windows não deixou mudar a ação da tampa. Faça à mão: Opções de energia →")
+        print("          'Escolher a função do fechamento da tampa' → 'Nada a fazer'.")
+
+
+def energia_restaurar():
+    if os.name != "nt" or "tampa_original" not in config:
+        return
+    ac, dc = config["tampa_original"]
+    _powercfg("/setacvalueindex", "SCHEME_CURRENT", "SUB_BUTTONS", "LIDACTION", str(ac))
+    _powercfg("/setdcvalueindex", "SCHEME_CURRENT", "SUB_BUTTONS", "LIDACTION", str(dc))
+    _powercfg("/setactive", "SCHEME_CURRENT")
+    config.pop("tampa_original", None)
+    salvar_config()
+    print("[energia] ação da tampa do notebook voltou ao normal.")
+
+
+def vigiar_telas():
+    """Quando uma tela sai ou entra (ex.: tampa fechada), leva a NAI em tela cheia para a tela certa."""
+    def assinatura():
+        return tuple((m["dev"], m["x"], m["y"], m["w"], m["h"]) for m in listar_monitores())
+    antes = assinatura()
+    while True:
+        time.sleep(2)
+        try:
+            agora = assinatura()
+            if agora == antes or not agora:
+                continue
+            time.sleep(2.5)                                          # espera o Windows terminar de reorganizar
+            antes = agora = assinatura()
+            mons = listar_monitores()
+            print("[tela] as telas mudaram:", " | ".join(m["desc"] for m in mons))
+            m = monitor_escolhido()
+            if not m or not navegador.get("html"):
+                continue
+            if encaixar_janela(m, 3):
+                print(f"[tela] NAI em tela cheia na {m['desc']}")
+            else:
+                print(f"[tela] reabrindo a NAI na {m['desc']}...")
+                fechar_navegador()
+                time.sleep(1)
+                abrir_navegador(navegador["html"])
+        except Exception as e:
+            print("[tela] aviso:", e)
 
 
 async def transmitir(maos):
@@ -749,6 +853,7 @@ MENU = """
 def sair(maos):
     print("\n[saindo] fechando a NAI...")
     fechar_navegador()
+    energia_restaurar()
     maos.rodando = False
     time.sleep(0.4)
     os._exit(0)
@@ -821,6 +926,7 @@ def ao_fechar_console():
         def tratar(evento):
             if evento in (2, 5, 6):                      # fechar janela, logoff, desligar
                 fechar_navegador()
+                energia_restaurar()
             return False
         ao_fechar_console.ref = TIPO(tratar)              # mantém a referência viva
         ctypes.windll.kernel32.SetConsoleCtrlHandler(ao_fechar_console.ref, True)
@@ -838,6 +944,9 @@ async def principal(a):
         if len(mons) > 1:
             print("[tela] telas encontradas:", " | ".join(m["desc"] for m in mons))
         ao_fechar_console()
+        energia_preparar()
+        if os.name == "nt":
+            threading.Thread(target=vigiar_telas, daemon=True).start()
         if not a.sem_navegador:
             html = achar_html()
             navegador["html"] = html
